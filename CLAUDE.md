@@ -23,7 +23,7 @@ Hệ thống quản lý bán sỉ hàng thổ cẩm — hỗ trợ doanh nghiệ
 - **Backend:** Electron 33 (main process, Node.js)
 - **Database:** SQLite via better-sqlite3
 - **Build tool:** electron-vite
-- **Đóng gói:** electron-builder (bước 6, chưa làm)
+- **Đóng gói:** electron-builder ✅ (output: `dist/Quan Ly Tho Cam Setup 1.0.0.exe`)
 
 ## Development Commands
 
@@ -65,6 +65,8 @@ src/
         ├── api.js          # Wrapper gọi IPC từ renderer
         ├── utils.js        # fmtFull, fmt, todayDisplay, isoToDisplay...
         ├── styles/global.css
+        ├── contexts/
+        │   └── DataContext.jsx  # refreshKey + triggerRefresh() real-time sync
         ├── components/
         │   ├── Sidebar.jsx
         │   └── TabNav.jsx
@@ -135,7 +137,7 @@ Công nợ KH       = Tổng tiền đơn hàng − Tiền đã trả
 ### Quy tắc nghiệp vụ quan trọng
 
 - **Tồn kho** chỉ giảm khi đơn bán được **xác nhận**, không giảm khi tạo nháp.
-- **Giá vốn** được chốt tại thời điểm nhập hàng, không thay đổi hồi tố.
+- **Giá vốn** tính theo **bình quân gia quyền** mỗi lần nhập thêm: `(tồn_cũ × giá_cũ + nhập_mới × giá_nhập) / tổng_tồn`. Giá vốn trong `order_items` được chốt tại thời điểm tạo đơn.
 - **Lợi nhuận** tính theo hàng đã bán thực tế, không tính hàng tồn kho.
 - Một đơn bán có thể được **thanh toán nhiều lần** (trả góp nợ nhiều đợt).
 - Không cho phép **sửa mã** khách hàng hoặc mã sản phẩm sau khi tạo.
@@ -214,6 +216,12 @@ npm run pack                         # đóng gói → dist/
 ### Data test
 File `seed.js` tạo sẵn data mẫu (5 KH, 10 SP, 3 phiếu nhập, 6 đơn bán, 2 thu nợ).
 Chạy: `npx electron seed.js` (phải dùng electron thay vì node vì better-sqlite3 compile cho Electron).
+- Dev DB: `D:\ThoCam\tho-cam.db`
+- Production DB: `C:\Users\<user>\AppData\Roaming\tho-cam-manager\tho-cam.db`
+
+### Desktop Shortcut
+File `run-dev.bat` — chạy `npm run dev` từ `D:\ThoCam`.
+Shortcut ngoài Desktop trỏ vào file này. Double-click là mở app dev có đầy đủ data.
 
 ### ✅ Cập nhật tính năng (07/05/2026)
 - **Real-time sync:** Tạo `DataContext` (`src/renderer/src/contexts/DataContext.jsx`) với `refreshKey` + `triggerRefresh()`. Mọi mutation (tạo đơn, thu tiền, nhập hàng...) gọi `triggerRefresh()` → Sidebar badge nợ và Dashboard tự cập nhật ngay.
