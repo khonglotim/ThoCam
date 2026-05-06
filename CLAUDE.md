@@ -218,5 +218,6 @@ Chạy: `npx electron seed.js` (phải dùng electron thay vì node vì better-s
 - **Chi tiết sản phẩm — Đơn bán:** Click vào dòng đơn hàng → xổ ra bảng sản phẩm (tên, ĐVT, SL, đơn giá, thành tiền). Dùng `orders:getById`, cache kết quả.
 - **Chi tiết sản phẩm — Thu nợ:** Click vào dòng khách hàng (tab Đang nợ) → xổ ra các đơn còn nợ kèm sản phẩm. Chọn đơn trong modal thu tiền → hiện sản phẩm ngay bên dưới.
 - **Báo cáo:** Bỏ `LIMIT 12`, thêm scroll cho bảng doanh thu theo tháng → hiển thị tất cả tháng.
+- **Giá vốn bình quân:** `imports.js` — khi nhập hàng, giá vốn tính lại theo bình quân gia quyền: `(tồn_cũ × giá_cũ + nhập_mới × giá_nhập) / tổng_tồn`. Không đè giá mới lên toàn bộ tồn kho cũ.
 
 ### ✅ Hoàn thành toàn bộ bước 1–6
