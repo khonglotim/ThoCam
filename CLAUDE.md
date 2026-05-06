@@ -213,4 +213,10 @@ npm run pack                         # đóng gói → dist/
 File `seed.js` tạo sẵn data mẫu (5 KH, 10 SP, 3 phiếu nhập, 6 đơn bán, 2 thu nợ).
 Chạy: `npx electron seed.js` (phải dùng electron thay vì node vì better-sqlite3 compile cho Electron).
 
+### ✅ Cập nhật tính năng (07/05/2026)
+- **Real-time sync:** Tạo `DataContext` (`src/renderer/src/contexts/DataContext.jsx`) với `refreshKey` + `triggerRefresh()`. Mọi mutation (tạo đơn, thu tiền, nhập hàng...) gọi `triggerRefresh()` → Sidebar badge nợ và Dashboard tự cập nhật ngay.
+- **Chi tiết sản phẩm — Đơn bán:** Click vào dòng đơn hàng → xổ ra bảng sản phẩm (tên, ĐVT, SL, đơn giá, thành tiền). Dùng `orders:getById`, cache kết quả.
+- **Chi tiết sản phẩm — Thu nợ:** Click vào dòng khách hàng (tab Đang nợ) → xổ ra các đơn còn nợ kèm sản phẩm. Chọn đơn trong modal thu tiền → hiện sản phẩm ngay bên dưới.
+- **Báo cáo:** Bỏ `LIMIT 12`, thêm scroll cho bảng doanh thu theo tháng → hiển thị tất cả tháng.
+
 ### ✅ Hoàn thành toàn bộ bước 1–6
