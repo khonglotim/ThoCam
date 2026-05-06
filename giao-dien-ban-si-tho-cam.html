@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thổ Cẩm Manager</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#f0f6ff;--surface:#ffffff;--surface2:#e8f2ff;--surface3:#d4e8ff;
+    --border:#c2d9f5;--accent:#2a7de1;--accent2:#1a63c0;--accent-lt:#e3f0ff;
+    --teal:#0ea5c8;--green:#16a34a;--green-lt:#dcfce7;--red:#dc2626;--red-lt:#fee2e2;
+    --yellow:#d97706;--yellow-lt:#fef3c7;--text:#0f2a4a;--text2:#3d6080;--text3:#8aaac8;
+    --sidebar-w:230px;--radius:12px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);display:flex;height:100vh;overflow:hidden;}
+  .sidebar{width:var(--sidebar-w);background:linear-gradient(160deg,#1a63c0 0%,#0ea5c8 100%);display:flex;flex-direction:column;flex-shrink:0;box-shadow:4px 0 20px rgba(42,125,225,0.2);}
+  .logo{padding:26px 22px 20px;border-bottom:1px solid rgba(255,255,255,0.15);}
+  .logo-icon{font-size:28px;margin-bottom:8px;display:block;}
+  .logo-title{font-size:17px;font-weight:800;color:#fff;line-height:1.2;}
+  .logo-sub{font-size:10px;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:2px;margin-top:3px;}
+  .nav{flex:1;padding:14px 12px;display:flex;flex-direction:column;gap:2px;}
+  .nav-section-label{font-size:9px;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,0.45);padding:14px 10px 5px;font-weight:700;}
+  .nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;font-size:13.5px;font-weight:600;color:rgba(255,255,255,0.7);transition:all 0.15s;}
+  .nav-item:hover{background:rgba(255,255,255,0.12);color:#fff;}
+  .nav-item.active{background:rgba(255,255,255,0.2);color:#fff;box-shadow:0 2px 8px rgba(0,0,0,0.1);}
+  .nav-icon{font-size:16px;width:22px;text-align:center;}
+  .nav-badge{margin-left:auto;background:#ff5252;color:white;font-size:10px;padding:2px 7px;border-radius:20px;font-weight:700;}
+  .sidebar-footer{padding:14px;border-top:1px solid rgba(255,255,255,0.15);}
+  .user-pill{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;background:rgba(255,255,255,0.15);}
+  .avatar{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:white;flex-shrink:0;}
+  .user-name{font-size:12.5px;font-weight:700;color:#fff;}
+  .user-role{font-size:10px;color:rgba(255,255,255,0.55);}
+  .main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+  .tab-nav{display:flex;background:var(--surface);border-bottom:2px solid var(--border);padding:0 28px;flex-shrink:0;}
+  .tab{padding:13px 16px;font-size:13px;font-weight:600;color:var(--text3);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all 0.15s;white-space:nowrap;}
+  .tab:hover{color:var(--accent);}
+  .tab.active{color:var(--accent);border-bottom-color:var(--accent);}
+  .topbar{padding:16px 28px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+  .page-title{font-size:20px;font-weight:800;color:var(--text);}
+  .page-sub{font-size:12px;color:var(--text3);margin-top:1px;font-weight:500;}
+  .topbar-actions{display:flex;align-items:center;gap:10px;}
+  .btn{padding:9px 18px;border-radius:9px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border:none;transition:all 0.15s;}
+  .btn-primary{background:linear-gradient(135deg,var(--accent),var(--teal));color:white;box-shadow:0 3px 12px rgba(42,125,225,0.3);}
+  .btn-primary:hover{transform:translateY(-1px);box-shadow:0 5px 16px rgba(42,125,225,0.4);}
+  .btn-ghost{background:var(--surface);color:var(--text2);border:1.5px solid var(--border);}
+  .btn-ghost:hover{background:var(--accent-lt);color:var(--accent);border-color:var(--accent);}
+  .content{flex:1;overflow-y:auto;padding:22px 28px;display:flex;flex-direction:column;gap:18px;}
+  .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+  .kpi-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);padding:18px 20px;position:relative;overflow:hidden;transition:all 0.2s;box-shadow:0 2px 8px rgba(42,125,225,0.06);}
+  .kpi-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(42,125,225,0.12);}
+  .kpi-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;}
+  .kpi-icon-box{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;}
+  .kpi-label{font-size:11.5px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;}
+  .kpi-value{font-size:26px;font-weight:800;margin-bottom:5px;}
+  .kpi-change{font-size:11.5px;font-weight:600;display:flex;align-items:center;gap:3px;}
+  .bottom-grid{display:grid;grid-template-columns:1.5fr 1fr;gap:14px;}
+  .panel{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:0 2px 8px rgba(42,125,225,0.06);}
+  .panel-header{padding:14px 20px;border-bottom:1.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--accent-lt);}
+  .panel-title{font-size:13.5px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:7px;}
+  .panel-link{font-size:12px;color:var(--accent);cursor:pointer;font-weight:600;}
+  .panel-link:hover{color:var(--accent2);text-decoration:underline;}
+  .data-table{width:100%;border-collapse:collapse;}
+  .data-table th{font-size:10.5px;text-transform:uppercase;letter-spacing:0.8px;color:var(--text3);padding:10px 18px;text-align:left;border-bottom:1.5px solid var(--border);font-weight:700;background:#fafcff;}
+  .data-table td{padding:12px 18px;font-size:13px;color:var(--text2);border-bottom:1px solid #eef4ff;font-weight:500;}
+  .data-table tr:last-child td{border-bottom:none;}
+  .data-table tr:hover td{background:var(--accent-lt);}
+  .td-name{color:var(--text)!important;font-weight:700;}
+  .td-amount{font-weight:800;font-size:13.5px!important;}
+  .badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;}
+  .badge-red{background:var(--red-lt);color:var(--red);}
+  .badge-yellow{background:var(--yellow-lt);color:var(--yellow);}
+  .badge-green{background:var(--green-lt);color:var(--green);}
+  .badge-blue{background:var(--accent-lt);color:var(--accent);}
+  .debt-item{padding:13px 20px;border-bottom:1px solid #eef4ff;cursor:pointer;transition:background 0.12s;}
+  .debt-item:hover{background:var(--accent-lt);}
+  .debt-item:last-child{border-bottom:none;}
+  .debt-row1{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;}
+  .debt-cust{font-size:13px;font-weight:700;color:var(--text);}
+  .debt-amount{font-size:14px;font-weight:800;color:var(--red);}
+  .debt-bar-bg{height:5px;background:var(--surface2);border-radius:3px;overflow:hidden;}
+  .debt-bar-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--accent),var(--teal));}
+  .debt-meta{display:flex;justify-content:space-between;margin-top:5px;font-size:11px;color:var(--text3);font-weight:600;}
+  ::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+  .modal-peek{position:fixed;right:0;top:0;bottom:0;width:380px;background:var(--surface);border-left:2px solid var(--border);transform:translateX(400px);transition:transform 0.3s cubic-bezier(0.16,1,0.3,1);z-index:100;display:flex;flex-direction:column;box-shadow:-8px 0 40px rgba(42,125,225,0.15);}
+  .modal-peek.open{transform:translateX(0);}
+  .modal-header{padding:20px 22px;border-bottom:1.5px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:linear-gradient(135deg,var(--accent),var(--teal));}
+  .modal-title{font-size:17px;font-weight:800;color:#fff;}
+  .close-btn{cursor:pointer;color:rgba(255,255,255,0.7);font-size:20px;line-height:1;}
+  .close-btn:hover{color:#fff;}
+  .modal-body{flex:1;overflow-y:auto;padding:20px 22px;}
+  .form-group{margin-bottom:16px;}
+  .form-label{font-size:11.5px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;display:block;font-weight:700;}
+  .form-input{width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:9px;padding:9px 13px;color:var(--text);font-family:'Nunito',sans-serif;font-size:13px;font-weight:600;outline:none;transition:border-color 0.15s;}
+  .form-input:focus{border-color:var(--accent);background:var(--surface);box-shadow:0 0 0 3px rgba(42,125,225,0.1);}
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .modal-footer{padding:16px 22px;border-top:1.5px solid var(--border);display:flex;gap:10px;background:#fafcff;}
+  .modal-footer .btn{flex:1;text-align:center;}
+  .summary-box{background:linear-gradient(135deg,var(--accent-lt),#e0f5ff);border:1.5px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:16px;}
+  .summary-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:13px;color:var(--text2);font-weight:600;}
+  .summary-row:last-child{margin-bottom:0;padding-top:10px;border-top:1.5px solid var(--border);}
+  .tag{display:inline-block;padding:2px 9px;border-radius:6px;font-size:11px;font-weight:700;background:var(--accent-lt);color:var(--accent);border:1px solid var(--border);}
+  .product-block{background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:13px 14px;margin-bottom:9px;}
+  .placeholder-panel{padding:60px;text-align:center;color:var(--text3);}
+  .placeholder-icon{font-size:48px;margin-bottom:16px;}
+  .placeholder-title{font-size:16px;font-weight:700;}
+  .placeholder-sub{font-size:13px;margin-top:8px;}
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="logo">
+    <span class="logo-icon">🧵</span>
+    <div class="logo-title">Thổ Cẩm<br>Manager</div>
+    <div class="logo-sub">Quản lý bán sỉ</div>
+  </div>
+  <nav class="nav">
+    <div class="nav-section-label">Tổng quan</div>
+    <div class="nav-item active" onclick="switchView('dashboard');setActive(this)"><span class="nav-icon">📊</span>Dashboard</div>
+    <div class="nav-section-label">Kinh doanh</div>
+    <div class="nav-item" onclick="switchView('don-ban');setActive(this)"><span class="nav-icon">🧾</span>Đơn bán sỉ</div>
+    <div class="nav-item" onclick="switchView('nhap-hang');setActive(this)"><span class="nav-icon">📥</span>Nhập hàng</div>
+    <div class="nav-item" onclick="switchView('thu-no');setActive(this)"><span class="nav-icon">💳</span>Thu nợ<span class="nav-badge">5</span></div>
+    <div class="nav-section-label">Danh mục</div>
+    <div class="nav-item" onclick="switchView('hang-hoa');setActive(this)"><span class="nav-icon">📦</span>Hàng hoá</div>
+    <div class="nav-item" onclick="switchView('khach-hang');setActive(this)"><span class="nav-icon">👥</span>Khách hàng</div>
+    <div class="nav-section-label">Phân tích</div>
+    <div class="nav-item" onclick="switchView('bao-cao');setActive(this)"><span class="nav-icon">📈</span>Báo cáo</div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-pill">
+      <div class="avatar">TC</div>
+      <div><div class="user-name">Thổ Cẩm Shop</div><div class="user-role">Quản trị viên</div></div>
+    </div>
+  </div>
+</aside>
+
+<div class="main">
+  <div class="tab-nav">
+    <div class="tab active" id="tab-dashboard" onclick="switchView('dashboard')">📊 Dashboard</div>
+    <div class="tab" id="tab-don-ban" onclick="switchView('don-ban')">🧾 Đơn bán sỉ</div>
+    <div class="tab" id="tab-nhap-hang" onclick="switchView('nhap-hang')">📥 Nhập hàng</div>
+    <div class="tab" id="tab-thu-no" onclick="switchView('thu-no')">💳 Thu nợ</div>
+    <div class="tab" id="tab-hang-hoa" onclick="switchView('hang-hoa')">📦 Hàng hoá</div>
+    <div class="tab" id="tab-khach-hang" onclick="switchView('khach-hang')">👥 Khách hàng</div>
+    <div class="tab" id="tab-bao-cao" onclick="switchView('bao-cao')">📈 Báo cáo</div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="view-dashboard" style="display:flex;flex-direction:column;flex:1;overflow:hidden;">
+    <div class="topbar">
+      <div><div class="page-title">Tổng quan hôm nay 👋</div><div class="page-sub">Thứ Tư, 06/05/2026</div></div>
+      <div class="topbar-actions">
+        <button class="btn btn-ghost">📅 Tháng này</button>
+        <button class="btn btn-primary" onclick="openModal()">＋ Tạo đơn bán</button>
+      </div>
+    </div>
+    <div class="content">
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-top"><div><div class="kpi-label">Doanh thu tháng</div><div class="kpi-value" style="color:var(--accent)">84.5tr</div></div><div class="kpi-icon-box" style="background:#e3f0ff">💰</div></div>
+          <div class="kpi-change" style="color:var(--green)">▲ +12% so với tháng trước</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-top"><div><div class="kpi-label">Lợi nhuận</div><div class="kpi-value" style="color:var(--green)">23.2tr</div></div><div class="kpi-icon-box" style="background:var(--green-lt)">📈</div></div>
+          <div class="kpi-change" style="color:var(--green)">▲ Tỷ suất 27.5%</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-top"><div><div class="kpi-label">Tổng công nợ</div><div class="kpi-value" style="color:var(--red)">18.4tr</div></div><div class="kpi-icon-box" style="background:var(--red-lt)">⚠️</div></div>
+          <div class="kpi-change" style="color:var(--red)">5 khách đang nợ</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-top"><div><div class="kpi-label">Tồn kho</div><div class="kpi-value" style="color:var(--yellow)">142</div></div><div class="kpi-icon-box" style="background:var(--yellow-lt)">📦</div></div>
+          <div class="kpi-change" style="color:var(--red)">▼ 3 loại sắp hết</div>
+        </div>
+      </div>
+      <div class="bottom-grid">
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">🧾 Đơn bán gần đây</div><span class="panel-link" onclick="switchView('don-ban')">Xem tất cả →</span></div>
+          <table class="data-table">
+            <thead><tr><th>Khách hàng</th><th>Sản phẩm</th><th>Tổng tiền</th><th>Trạng thái</th></tr></thead>
+            <tbody>
+              <tr><td class="td-name">Cửa hàng Hoa Mai</td><td>Khăn thổ cẩm ×12</td><td class="td-amount" style="color:var(--accent)">3.6tr</td><td><span class="badge badge-green">✓ Đã trả đủ</span></td></tr>
+              <tr><td class="td-name">Đại lý Sơn La</td><td>Túi thổ cẩm ×20</td><td class="td-amount" style="color:var(--accent)">8.2tr</td><td><span class="badge badge-yellow">⏳ Còn nợ</span></td></tr>
+              <tr><td class="td-name">Shop Vân Hương</td><td>Vải thổ cẩm 15m</td><td class="td-amount" style="color:var(--accent)">5.1tr</td><td><span class="badge badge-red">✕ Chưa trả</span></td></tr>
+              <tr><td class="td-name">Cửa hàng Bắc Hà</td><td>Khăn + Túi ×8</td><td class="td-amount" style="color:var(--accent)">2.9tr</td><td><span class="badge badge-green">✓ Đã trả đủ</span></td></tr>
+              <tr><td class="td-name">Đại lý Lai Châu</td><td>Áo thổ cẩm ×6</td><td class="td-amount" style="color:var(--accent)">4.8tr</td><td><span class="badge badge-yellow">⏳ Còn nợ</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">💳 Khách đang nợ</div><span class="tag">Tổng: 18.4tr</span></div>
+          <div>
+            <div class="debt-item"><div class="debt-row1"><span class="debt-cust">Đại lý Sơn La</span><span class="debt-amount">6.5tr</span></div><div class="debt-bar-bg"><div class="debt-bar-fill" style="width:85%"></div></div><div class="debt-meta"><span>Đã trả: 1.7tr</span><span>Từ 02/05</span></div></div>
+            <div class="debt-item"><div class="debt-row1"><span class="debt-cust">Shop Vân Hương</span><span class="debt-amount">5.1tr</span></div><div class="debt-bar-bg"><div class="debt-bar-fill" style="width:100%"></div></div><div class="debt-meta"><span>Đã trả: 0đ</span><span>Từ 28/04</span></div></div>
+            <div class="debt-item"><div class="debt-row1"><span class="debt-cust">Đại lý Lai Châu</span><span class="debt-amount">3.2tr</span></div><div class="debt-bar-bg"><div class="debt-bar-fill" style="width:45%"></div></div><div class="debt-meta"><span>Đã trả: 1.6tr</span><span>Từ 30/04</span></div></div>
+            <div class="debt-item"><div class="debt-row1"><span class="debt-cust">Cửa hàng Mường Lay</span><span class="debt-amount">2.4tr</span></div><div class="debt-bar-bg"><div class="debt-bar-fill" style="width:60%"></div></div><div class="debt-meta"><span>Đã trả: 0.96tr</span><span>Từ 01/05</span></div></div>
+            <div class="debt-item"><div class="debt-row1"><span class="debt-cust">Đại lý Điện Biên</span><span class="debt-amount">1.2tr</span></div><div class="debt-bar-bg"><div class="debt-bar-fill" style="width:30%"></div></div><div class="debt-meta"><span>Đã trả: 0.84tr</span><span>Từ 04/05</span></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ĐƠN BÁN -->
+  <div id="view-don-ban" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+    <div class="topbar">
+      <div><div class="page-title">Đơn bán sỉ</div><div class="page-sub">Quản lý toàn bộ đơn hàng</div></div>
+      <div class="topbar-actions"><input class="form-input" style="width:230px" placeholder="🔍  Tìm khách hàng, mã đơn..."><button class="btn btn-primary" onclick="openModal()">＋ Tạo đơn mới</button></div>
+    </div>
+    <div class="content">
+      <div style="display:flex;gap:8px"><span class="badge badge-blue" style="padding:5px 14px;font-size:12px;cursor:pointer">Tất cả (13)</span><span class="badge badge-green" style="padding:5px 14px;font-size:12px;cursor:pointer">✓ Đã thanh toán (8)</span><span class="badge badge-yellow" style="padding:5px 14px;font-size:12px;cursor:pointer">⏳ Còn nợ (3)</span><span class="badge badge-red" style="padding:5px 14px;font-size:12px;cursor:pointer">✕ Chưa trả (2)</span></div>
+      <div class="panel">
+        <div class="panel-header"><div class="panel-title">Danh sách đơn hàng</div></div>
+        <table class="data-table">
+          <thead><tr><th>Mã đơn</th><th>Ngày bán</th><th>Khách hàng</th><th>Sản phẩm</th><th>Tổng tiền</th><th>Đã thu</th><th>Còn nợ</th><th>Trạng thái</th></tr></thead>
+          <tbody>
+            <tr><td style="color:var(--accent);font-weight:800">#DH-0023</td><td>06/05/2026</td><td class="td-name">Đại lý Sơn La</td><td>Túi thổ cẩm ×20</td><td class="td-amount" style="color:var(--accent)">8.200.000đ</td><td style="color:var(--green);font-weight:700">1.700.000đ</td><td style="color:var(--red);font-weight:800">6.500.000đ</td><td><span class="badge badge-yellow">⏳ Còn nợ</span></td></tr>
+            <tr><td style="color:var(--accent);font-weight:800">#DH-0022</td><td>05/05/2026</td><td class="td-name">Shop Vân Hương</td><td>Vải thổ cẩm 15m</td><td class="td-amount" style="color:var(--accent)">5.100.000đ</td><td style="color:var(--text3);font-weight:700">0đ</td><td style="color:var(--red);font-weight:800">5.100.000đ</td><td><span class="badge badge-red">✕ Chưa trả</span></td></tr>
+            <tr><td style="color:var(--accent);font-weight:800">#DH-0021</td><td>04/05/2026</td><td class="td-name">Cửa hàng Hoa Mai</td><td>Khăn thổ cẩm ×12</td><td class="td-amount" style="color:var(--accent)">3.600.000đ</td><td style="color:var(--green);font-weight:700">3.600.000đ</td><td style="color:var(--text3);font-weight:700">0đ</td><td><span class="badge badge-green">✓ Đã trả đủ</span></td></tr>
+            <tr><td style="color:var(--accent);font-weight:800">#DH-0020</td><td>03/05/2026</td><td class="td-name">Đại lý Lai Châu</td><td>Áo thổ cẩm ×6</td><td class="td-amount" style="color:var(--accent)">4.800.000đ</td><td style="color:var(--green);font-weight:700">1.600.000đ</td><td style="color:var(--red);font-weight:800">3.200.000đ</td><td><span class="badge badge-yellow">⏳ Còn nợ</span></td></tr>
+            <tr><td style="color:var(--accent);font-weight:800">#DH-0019</td><td>01/05/2026</td><td class="td-name">Cửa hàng Bắc Hà</td><td>Khăn + Túi ×8</td><td class="td-amount" style="color:var(--accent)">2.900.000đ</td><td style="color:var(--green);font-weight:700">2.900.000đ</td><td style="color:var(--text3);font-weight:700">0đ</td><td><span class="badge badge-green">✓ Đã trả đủ</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- NHẬP HÀNG -->
+  <div id="view-nhap-hang" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+    <div class="topbar"><div><div class="page-title">Nhập hàng</div><div class="page-sub">Quản lý kho & phiếu nhập</div></div><div class="topbar-actions"><button class="btn btn-primary">＋ Phiếu nhập mới</button></div></div>
+    <div class="content">
+      <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr)">
+        <div class="kpi-card"><div class="kpi-top"><div><div class="kpi-label">Tổng nhập tháng</div><div class="kpi-value" style="color:var(--accent)">61.3tr</div></div><div class="kpi-icon-box" style="background:var(--accent-lt)">📥</div></div><div class="kpi-change" style="color:var(--text3)">8 phiếu nhập</div></div>
+        <div class="kpi-card"><div class="kpi-top"><div><div class="kpi-label">Tổng mặt hàng</div><div class="kpi-value" style="color:var(--yellow)">142</div></div><div class="kpi-icon-box" style="background:var(--yellow-lt)">📦</div></div><div class="kpi-change" style="color:var(--text3)">Trong kho hiện tại</div></div>
+        <div class="kpi-card"><div class="kpi-top"><div><div class="kpi-label">Cảnh báo hết hàng</div><div class="kpi-value" style="color:var(--red)">3</div></div><div class="kpi-icon-box" style="background:var(--red-lt)">⚠️</div></div><div class="kpi-change" style="color:var(--red)">Cần nhập thêm gấp</div></div>
+      </div>
+      <div class="panel">
+        <div class="panel-header"><div class="panel-title">📦 Tồn kho hiện tại</div><input class="form-input" style="width:200px" placeholder="🔍 Tìm sản phẩm..."></div>
+        <table class="data-table">
+          <thead><tr><th>Mã SP</th><th>Tên sản phẩm</th><th>Danh mục</th><th>Đơn vị</th><th>Giá vốn</th><th>Giá bán sỉ</th><th>Tồn kho</th><th>Tình trạng</th></tr></thead>
+          <tbody>
+            <tr><td style="color:var(--accent);font-weight:800">SP-001</td><td class="td-name">Khăn thổ cẩm truyền thống</td><td>Khăn</td><td>Cái</td><td>180.000đ</td><td style="color:var(--accent);font-weight:700">300.000đ</td><td style="color:var(--green);font-weight:800">48</td><td><span class="badge badge-green">✓ Đủ hàng</span></td></tr>
+            <tr><td style="color:var(--accent);font-weight:800">SP-002</td><td class="td-name">Túi thổ cẩm đeo chéo</td><td>Túi</td><td>Cái</td><td>220.000đ</td><td style="color:var(--accent);font-weight:700">410.000đ</td><td style="color:var(--yellow);font-weight:800">12</td><td><span class="badge badge-yellow">⚡ Còn ít</span></td></tr>
+            <tr><td style="color:var(--accent);font-weight:800">SP-003</td><td class="td-name">Vải thổ cẩm họa tiết hoa</td><td>Vải</td><td>Mét</td><td>95.000đ</td><td style="color:var(--accent);font-weight:700">160.000đ</td><td style="color:var(--red);font-weight:800">3</td><td><span class="badge badge-red">⚠️ Sắp hết</span></td></tr>
+            <tr><td style="color:var(--accent);font-weight:800">SP-004</td><td class="td-name">Áo thổ cẩm nữ</td><td>Áo</td><td>Cái</td><td>340.000đ</td><td style="color:var(--accent);font-weight:700">580.000đ</td><td style="color:var(--green);font-weight:800">24</td><td><span class="badge badge-green">✓ Đủ hàng</span></td></tr>
+            <tr><td style="color:var(--accent);font-weight:800">SP-005</td><td class="td-name">Bộ gối thổ cẩm</td><td>Đồ dùng</td><td>Bộ</td><td>280.000đ</td><td style="color:var(--accent);font-weight:700">450.000đ</td><td style="color:var(--red);font-weight:800">2</td><td><span class="badge badge-red">⚠️ Sắp hết</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- THU NỢ -->
+  <div id="view-thu-no" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+    <div class="topbar"><div><div class="page-title">Quản lý thu nợ</div><div class="page-sub">Theo dõi công nợ khách hàng</div></div></div>
+    <div class="content">
+      <div class="panel">
+        <div class="panel-header"><div class="panel-title">💳 Danh sách khách đang nợ</div><span class="tag">Tổng nợ: 18.4tr</span></div>
+        <table class="data-table">
+          <thead><tr><th>Khách hàng</th><th>Tổng đơn hàng</th><th>Đã thanh toán</th><th>Còn nợ</th><th>Nợ từ</th><th>Thao tác</th></tr></thead>
+          <tbody>
+            <tr><td class="td-name">Đại lý Sơn La</td><td>8.200.000đ</td><td style="color:var(--green);font-weight:700">1.700.000đ</td><td style="color:var(--red);font-weight:800">6.500.000đ</td><td>02/05/2026</td><td><button class="btn btn-primary" style="padding:5px 14px;font-size:12px">Thu tiền</button></td></tr>
+            <tr><td class="td-name">Shop Vân Hương</td><td>5.100.000đ</td><td style="color:var(--text3);font-weight:700">0đ</td><td style="color:var(--red);font-weight:800">5.100.000đ</td><td>28/04/2026</td><td><button class="btn btn-primary" style="padding:5px 14px;font-size:12px">Thu tiền</button></td></tr>
+            <tr><td class="td-name">Đại lý Lai Châu</td><td>4.800.000đ</td><td style="color:var(--green);font-weight:700">1.600.000đ</td><td style="color:var(--red);font-weight:800">3.200.000đ</td><td>30/04/2026</td><td><button class="btn btn-primary" style="padding:5px 14px;font-size:12px">Thu tiền</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- HÀNG HOÁ -->
+  <div id="view-hang-hoa" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+    <div class="topbar"><div><div class="page-title">Hàng hoá</div><div class="page-sub">Danh mục sản phẩm thổ cẩm</div></div><div class="topbar-actions"><button class="btn btn-primary">＋ Thêm sản phẩm</button></div></div>
+    <div class="content"><div class="panel"><div class="placeholder-panel"><div class="placeholder-icon">📦</div><div class="placeholder-title">Màn hình Hàng hoá</div><div class="placeholder-sub">Quản lý toàn bộ danh mục sản phẩm thổ cẩm</div></div></div></div>
+  </div>
+
+  <!-- KHÁCH HÀNG -->
+  <div id="view-khach-hang" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+    <div class="topbar"><div><div class="page-title">Khách hàng</div><div class="page-sub">Danh sách đại lý, người mua sỉ</div></div><div class="topbar-actions"><button class="btn btn-primary">＋ Thêm khách hàng</button></div></div>
+    <div class="content"><div class="panel"><div class="placeholder-panel"><div class="placeholder-icon">👥</div><div class="placeholder-title">Màn hình Khách hàng</div><div class="placeholder-sub">Quản lý thông tin và công nợ từng khách</div></div></div></div>
+  </div>
+
+  <!-- BÁO CÁO -->
+  <div id="view-bao-cao" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+    <div class="topbar"><div><div class="page-title">Báo cáo & Thống kê</div><div class="page-sub">Doanh thu, lợi nhuận, tồn kho</div></div></div>
+    <div class="content"><div class="panel"><div class="placeholder-panel"><div class="placeholder-icon">📈</div><div class="placeholder-title">Màn hình Báo cáo</div><div class="placeholder-sub">Biểu đồ doanh thu, lợi nhuận, tồn kho theo thời gian</div></div></div></div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-peek" id="modal">
+  <div class="modal-header"><div class="modal-title">🧾 Tạo đơn bán mới</div><div class="close-btn" onclick="closeModal()">✕</div></div>
+  <div class="modal-body">
+    <div class="form-group"><label class="form-label">Khách hàng</label><select class="form-input"><option>Chọn khách hàng...</option><option>Đại lý Sơn La</option><option>Shop Vân Hương</option><option>Cửa hàng Hoa Mai</option><option>Đại lý Lai Châu</option></select></div>
+    <div class="form-group"><label class="form-label">Ngày bán</label><input class="form-input" type="date" value="2026-05-06"></div>
+    <label class="form-label">Sản phẩm</label>
+    <div class="product-block">
+      <div class="form-row" style="margin-bottom:10px">
+        <div><div class="form-label">Tên sản phẩm</div><select class="form-input"><option>Khăn thổ cẩm</option><option>Túi thổ cẩm</option><option>Vải thổ cẩm</option></select></div>
+        <div><div class="form-label">Số lượng</div><input class="form-input" type="number" value="10" min="1"></div>
+      </div>
+      <div class="form-row">
+        <div><div class="form-label">Đơn giá (đ)</div><input class="form-input" type="number" value="300000"></div>
+        <div><div class="form-label">Thành tiền</div><input class="form-input" value="3.000.000đ" readonly style="color:var(--accent);font-weight:800"></div>
+      </div>
+    </div>
+    <button class="btn btn-ghost" style="width:100%;font-size:12px;margin-bottom:16px">＋ Thêm sản phẩm</button>
+    <div class="summary-box">
+      <div class="summary-row"><span>Tổng tiền đơn</span><span style="font-weight:800;font-size:16px;color:var(--accent)">3.000.000đ</span></div>
+      <div class="form-group" style="margin-bottom:10px"><label class="form-label">Tiền khách trả ngay</label><input class="form-input" type="number" placeholder="Nhập số tiền..."></div>
+      <div class="summary-row"><span>Còn nợ lại</span><span style="font-weight:800;font-size:15px;color:var(--red)">3.000.000đ</span></div>
+    </div>
+    <div class="form-group"><label class="form-label">Ghi chú</label><textarea class="form-input" style="height:72px;resize:none" placeholder="Thông tin thêm nếu cần..."></textarea></div>
+  </div>
+  <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal()">Huỷ</button><button class="btn btn-primary">✓ Xác nhận đơn</button></div>
+</div>
+
+<script>
+  const views=['dashboard','don-ban','nhap-hang','thu-no','hang-hoa','khach-hang','bao-cao'];
+  function switchView(v){views.forEach(id=>{document.getElementById('view-'+id).style.display=id===v?'flex':'none';const t=document.getElementById('tab-'+id);if(t)t.classList.toggle('active',id===v);});}
+  function setActive(el){document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));el.classList.add('active');}
+  function openModal(){document.getElementById('modal').classList.add('open');}
+  function closeModal(){document.getElementById('modal').classList.remove('open');}
+</script>
+</body>
+</html>
