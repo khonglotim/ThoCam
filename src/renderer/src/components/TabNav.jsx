@@ -1,5 +1,5 @@
 const TABS = [
-  { id: 'dashboard', label: '📊 Dashboard' },
+  { id: 'dashboard', label: '📊 Tổng quan' },
   { id: 'don-ban', label: '🧾 Đơn bán sỉ' },
   { id: 'nhap-hang', label: '📥 Nhập hàng' },
   { id: 'thu-no', label: '💳 Thu nợ' },

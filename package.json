@@ -25,7 +25,7 @@
   },
   "build": {
     "appId": "com.thocan.manager",
-    "productName": "Quan Ly Tho Cam",
+    "productName": "Quản Lý Thổ Cẩm",
     "copyright": "Copyright © 2026",
     "directories": {
       "output": "dist"
@@ -54,7 +54,7 @@
       "installerLanguages": ["en_US"],
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "Quan Ly Tho Cam"
+      "shortcutName": "Quản Lý Thổ Cẩm"
     }
   }
 }

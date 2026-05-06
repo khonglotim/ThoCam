@@ -92,11 +92,11 @@ log('Tables ready')
 // ─── CUSTOMERS ───────────────────────────────────────────────
 const insC = db.prepare('INSERT INTO customers (code,name,phone,address,created_at) VALUES (?,?,?,?,?)')
 const custData = [
-  ['KH-0001', 'Nguyen Thi Hoa',  '0912345678', 'Buon Ma Thuot, Dak Lak',  '01/03/2026'],
-  ['KH-0002', 'Tran Van Nam',    '0908765432', 'Hai Chau, Da Nang',        '01/03/2026'],
-  ['KH-0003', 'Le Thi Mai',      '0977654321', 'Hoan Kiem, Ha Noi',        '01/03/2026'],
-  ['KH-0004', 'Pham Van Duc',    '0965432187', 'Ninh Kieu, Can Tho',       '01/03/2026'],
-  ['KH-0005', 'Hoang Thi Lan',   '0934218765', 'Le Chan, Hai Phong',       '01/03/2026'],
+  ['KH-0001', 'Nguyễn Thị Hoa',  '0912345678', 'Buôn Ma Thuột, Đắk Lắk', '01/03/2026'],
+  ['KH-0002', 'Trần Văn Nam',    '0908765432', 'Hải Châu, Đà Nẵng',       '01/03/2026'],
+  ['KH-0003', 'Lê Thị Mai',      '0977654321', 'Hoàn Kiếm, Hà Nội',       '01/03/2026'],
+  ['KH-0004', 'Phạm Văn Đức',    '0965432187', 'Ninh Kiều, Cần Thơ',      '01/03/2026'],
+  ['KH-0005', 'Hoàng Thị Lan',   '0934218765', 'Lê Chân, Hải Phòng',      '01/03/2026'],
 ]
 for (const r of custData) insC.run(...r)
 log('Customers: ' + custData.length + ' inserted')
@@ -104,16 +104,16 @@ log('Customers: ' + custData.length + ' inserted')
 // ─── PRODUCTS ────────────────────────────────────────────────
 const insP = db.prepare('INSERT INTO products (code,name,category,unit,cost_price,sell_price,stock,stock_warning,created_at) VALUES (?,?,?,?,?,?,0,?,?)')
 const prodData = [
-  ['SP-0001','Khan tho cam Tay Nguyen', 'Khan',    'Chiec', 80000, 120000, 15,'01/03/2026'],
-  ['SP-0002','Tui tho cam truyen thong','Tui',     'Cai',  150000, 220000, 10,'01/03/2026'],
-  ['SP-0003','Ao tho cam nu',           'Ao',      'Chiec',350000, 500000, 10,'01/03/2026'],
-  ['SP-0004','Vay tho cam HMong',       'Vay',     'Chiec',450000, 650000,  8,'01/03/2026'],
-  ['SP-0005','Tam tho cam trang tri',   'Tam vai', 'Tam',  200000, 300000, 10,'01/03/2026'],
-  ['SP-0006','Khan quang tho cam',      'Khan',    'Chiec', 95000, 145000, 15,'01/03/2026'],
-  ['SP-0007','Vi tho cam handmade',     'Phu kien','Cai',   75000, 120000, 20,'01/03/2026'],
-  ['SP-0008','Ao tho cam nam',          'Ao',      'Chiec',380000, 550000, 10,'01/03/2026'],
-  ['SP-0009','Dep tho cam',             'Giay dep','Doi',  180000, 270000, 10,'01/03/2026'],
-  ['SP-0010','Mu tho cam',              'Phu kien','Cai',  120000, 180000, 10,'01/03/2026'],
+  ['SP-0001','Khăn thổ cẩm Tây Nguyên',  'Khăn',      'Chiếc', 80000, 120000, 15,'01/03/2026'],
+  ['SP-0002','Túi thổ cẩm truyền thống', 'Túi',       'Cái',  150000, 220000, 10,'01/03/2026'],
+  ['SP-0003','Áo thổ cẩm nữ',            'Áo',        'Chiếc',350000, 500000, 10,'01/03/2026'],
+  ['SP-0004','Váy thổ cẩm H\'Mông',      'Váy',       'Chiếc',450000, 650000,  8,'01/03/2026'],
+  ['SP-0005','Tấm thổ cẩm trang trí',    'Tấm vải',   'Tấm',  200000, 300000, 10,'01/03/2026'],
+  ['SP-0006','Khăn quàng thổ cẩm',       'Khăn',      'Chiếc', 95000, 145000, 15,'01/03/2026'],
+  ['SP-0007','Ví thổ cẩm handmade',      'Phụ kiện',  'Cái',   75000, 120000, 20,'01/03/2026'],
+  ['SP-0008','Áo thổ cẩm nam',           'Áo',        'Chiếc',380000, 550000, 10,'01/03/2026'],
+  ['SP-0009','Dép thổ cẩm',              'Giày dép',  'Đôi',  180000, 270000, 10,'01/03/2026'],
+  ['SP-0010','Mũ thổ cẩm',               'Phụ kiện',  'Cái',  120000, 180000, 10,'01/03/2026'],
 ]
 for (const r of prodData) insP.run(...r)
 log('Products: ' + prodData.length + ' inserted')
@@ -124,15 +124,15 @@ function cid(code) { return db.prepare('SELECT id FROM customers WHERE code=?').
 // ─── IMPORT RECEIPTS ─────────────────────────────────────────
 //   PN-0001: 01/03/2026  PN-0002: 15/03/2026  PN-0003: 01/04/2026
 const imports = [
-  { code:'PN-0001', date:'01/03/2026', supplier:'NCC Tho cam Tay Bac', items:[
+  { code:'PN-0001', date:'01/03/2026', supplier:'NCC Thổ cẩm Tây Bắc', items:[
     {p:'SP-0001',q:50,c:80000},{p:'SP-0002',q:30,c:150000},{p:'SP-0003',q:20,c:350000},
     {p:'SP-0004',q:20,c:450000},{p:'SP-0005',q:40,c:200000}
   ]},
-  { code:'PN-0002', date:'15/03/2026', supplier:'NCC Tho cam Tay Nguyen', items:[
+  { code:'PN-0002', date:'15/03/2026', supplier:'NCC Thổ cẩm Tây Nguyên', items:[
     {p:'SP-0006',q:50,c:95000},{p:'SP-0007',q:60,c:75000},{p:'SP-0008',q:25,c:380000},
     {p:'SP-0009',q:35,c:180000},{p:'SP-0010',q:40,c:120000}
   ]},
-  { code:'PN-0003', date:'01/04/2026', supplier:'NCC Dang Van Hung', items:[
+  { code:'PN-0003', date:'01/04/2026', supplier:'NCC Đặng Văn Hùng', items:[
     {p:'SP-0001',q:30,c:82000},{p:'SP-0003',q:15,c:355000},{p:'SP-0008',q:20,c:385000}
   ]},
 ]
@@ -209,8 +209,8 @@ const updOPay  = db.prepare('UPDATE orders SET paid_amount=?,remaining_debt=?,st
 const updCPay  = db.prepare('UPDATE customers SET total_paid=total_paid+?,debt=MAX(0,debt-?) WHERE id=?')
 
 const colData = [
-  { date:'15/04/2026', ccode:'KH-0002', amount:1500000, ocode:'DH-0002', notes:'Thu no dot 1' },
-  { date:'20/04/2026', ccode:'KH-0004', amount:2000000, ocode:'DH-0005', notes:'Thu no dot 1' },
+  { date:'15/04/2026', ccode:'KH-0002', amount:1500000, ocode:'DH-0002', notes:'Thu nợ đợt 1' },
+  { date:'20/04/2026', ccode:'KH-0004', amount:2000000, ocode:'DH-0005', notes:'Thu nợ đợt 1' },
 ]
 
 for (const col of colData) {

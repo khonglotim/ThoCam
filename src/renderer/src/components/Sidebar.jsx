@@ -25,12 +25,12 @@ export default function Sidebar({ view, onNavigate }) {
     <aside className="sidebar">
       <div className="logo">
         <span className="logo-icon">🧵</span>
-        <div className="logo-title">Thổ Cẩm<br />Manager</div>
+        <div className="logo-title">Thổ Cẩm<br />Quản Lý</div>
         <div className="logo-sub">Quản lý bán sỉ</div>
       </div>
       <nav className="nav">
         <div className="nav-section-label">Tổng quan</div>
-        {item('dashboard', '📊', 'Dashboard')}
+        {item('dashboard', '📊', 'Tổng quan')}
         <div className="nav-section-label">Kinh doanh</div>
         {item('don-ban', '🧾', 'Đơn bán sỉ')}
         {item('nhap-hang', '📥', 'Nhập hàng')}
