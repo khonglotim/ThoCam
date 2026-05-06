@@ -97,6 +97,7 @@ export default function BaoCao() {
                 {monthly.length === 0 ? (
                   <div className="empty-state">Chưa có dữ liệu</div>
                 ) : (
+                  <div style={{ maxHeight: 420, overflowY: 'auto' }}>
                   <table className="data-table">
                     <thead>
                       <tr>
@@ -128,6 +129,7 @@ export default function BaoCao() {
                       })}
                     </tbody>
                   </table>
+                  </div>
                 )}
               </div>
 

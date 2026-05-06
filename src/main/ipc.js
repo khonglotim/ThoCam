@@ -95,7 +95,6 @@ export function registerAllHandlers() {
       JOIN order_items oi ON o.id = oi.order_id
       GROUP BY SUBSTR(o.date, 7, 4) || SUBSTR(o.date, 4, 2)
       ORDER BY SUBSTR(o.date, 7, 4) || SUBSTR(o.date, 4, 2) DESC
-      LIMIT 12
     `).all()
   })
 
