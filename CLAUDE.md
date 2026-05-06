@@ -11,6 +11,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 > **TRƯỚC KHI LÀM BẤT KỲ VIỆC GÌ — DÙ LÀ SỬA CODE, CHẠY LỆNH, PUSH GIT, XÓA FILE, HAY BẤT CỨ THAO TÁC NÀO — ĐỀU PHẢI TRÌNH BÀY KẾ HOẠCH VÀ CHỜ BOSS PHÊ DUYỆT. TUYỆT ĐỐI KHÔNG TỰ Ý QUYẾT ĐỊNH.**
 
+> **QUY TRÌNH BẮT BUỘC: SỬA XONG → BÁO CÁO KẾT QUẢ → HỎI BOSS → CHỜ BOSS NÓI OK → MỚI PUSH GIT. KHÔNG ĐƯỢC GỘP BƯỚC. ĐÃ VI PHẠM 2 LẦN.**
+
 ## Project Overview
 
 Hệ thống quản lý bán sỉ hàng thổ cẩm — hỗ trợ doanh nghiệp theo dõi nhập/xuất hàng, công nợ khách hàng, doanh thu và lợi nhuận. Phiên bản 1.0, tháng 05/2026.
