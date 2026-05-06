@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { orders as ordersApi, customers as customersApi, products as productsApi } from '../api'
 import { fmtFull, todayDisplay } from '../utils'
+import { useData } from '../contexts/DataContext'
 
 function StatusBadge({ status }) {
   if (status === 'paid') return <span className="badge badge-green">✓ Đã trả đủ</span>
@@ -230,6 +231,9 @@ export default function DonBan() {
   const [showCreate, setShowCreate] = useState(false)
   const [showPayment, setShowPayment] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [expandedId, setExpandedId] = useState(null)
+  const [orderDetails, setOrderDetails] = useState({})
+  const { triggerRefresh } = useData()
 
   const load = async () => {
     setLoading(true)
@@ -248,6 +252,15 @@ export default function DonBan() {
   }
 
   useEffect(() => { load() }, [])
+
+  const toggleExpand = async (orderId) => {
+    if (expandedId === orderId) { setExpandedId(null); return }
+    if (!orderDetails[orderId]) {
+      const detail = await ordersApi.getById(orderId)
+      setOrderDetails(prev => ({ ...prev, [orderId]: detail }))
+    }
+    setExpandedId(orderId)
+  }
 
   const filtered = orderList.filter(o => {
     if (filter !== 'all' && o.status !== filter) return false
@@ -298,6 +311,7 @@ export default function DonBan() {
         <div className="panel">
           <div className="panel-header">
             <div className="panel-title">Danh sách đơn hàng</div>
+            <span style={{ fontSize: 11, color: 'var(--text3)' }}>Click vào dòng để xem sản phẩm</span>
           </div>
           {loading ? (
             <div className="empty-state">Đang tải...</div>
@@ -305,6 +319,7 @@ export default function DonBan() {
             <table className="data-table">
               <thead>
                 <tr>
+                  <th></th>
                   <th>Mã đơn</th><th>Ngày bán</th><th>Khách hàng</th>
                   <th>Tổng tiền</th><th>Đã thu</th><th>Còn nợ</th>
                   <th>Trạng thái</th><th>Thao tác</th>
@@ -312,28 +327,63 @@ export default function DonBan() {
               </thead>
               <tbody>
                 {filtered.length === 0 && (
-                  <tr><td colSpan={8} className="empty-state">Không có đơn hàng nào</td></tr>
+                  <tr><td colSpan={9} className="empty-state">Không có đơn hàng nào</td></tr>
                 )}
                 {filtered.map(o => (
-                  <tr key={o.id}>
-                    <td style={{ color: 'var(--accent)', fontWeight: 800 }}>{o.code}</td>
-                    <td>{o.date}</td>
-                    <td className="td-name">{o.customer_name}</td>
-                    <td className="td-amount" style={{ color: 'var(--accent)' }}>{fmtFull(o.total_amount)}</td>
-                    <td style={{ color: 'var(--green)', fontWeight: 700 }}>{fmtFull(o.paid_amount)}</td>
-                    <td style={{ color: o.remaining_debt > 0 ? 'var(--red)' : 'var(--text3)', fontWeight: 800 }}>
-                      {fmtFull(o.remaining_debt)}
-                    </td>
-                    <td><StatusBadge status={o.status} /></td>
-                    <td>
-                      {o.status !== 'paid' && (
-                        <button className="btn btn-primary" style={{ padding: '5px 12px', fontSize: 12 }}
-                          onClick={() => setShowPayment(o)}>
-                          Thu tiền
-                        </button>
-                      )}
-                    </td>
-                  </tr>
+                  <React.Fragment key={o.id}>
+                    <tr style={{ cursor: 'pointer' }} onClick={() => toggleExpand(o.id)}>
+                      <td style={{ color: 'var(--text3)', fontSize: 11, width: 20, userSelect: 'none' }}>
+                        {expandedId === o.id ? '▲' : '▶'}
+                      </td>
+                      <td style={{ color: 'var(--accent)', fontWeight: 800 }}>{o.code}</td>
+                      <td>{o.date}</td>
+                      <td className="td-name">{o.customer_name}</td>
+                      <td className="td-amount" style={{ color: 'var(--accent)' }}>{fmtFull(o.total_amount)}</td>
+                      <td style={{ color: 'var(--green)', fontWeight: 700 }}>{fmtFull(o.paid_amount)}</td>
+                      <td style={{ color: o.remaining_debt > 0 ? 'var(--red)' : 'var(--text3)', fontWeight: 800 }}>
+                        {fmtFull(o.remaining_debt)}
+                      </td>
+                      <td><StatusBadge status={o.status} /></td>
+                      <td>
+                        {o.status !== 'paid' && (
+                          <button className="btn btn-primary" style={{ padding: '5px 12px', fontSize: 12 }}
+                            onClick={e => { e.stopPropagation(); setShowPayment(o) }}>
+                            Thu tiền
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                    {expandedId === o.id && (
+                      <tr>
+                        <td colSpan={9} style={{ padding: '0 16px 12px 36px', background: 'var(--surface)' }}>
+                          {!orderDetails[o.id] ? (
+                            <div style={{ padding: '8px 0', color: 'var(--text3)', fontSize: 13 }}>Đang tải...</div>
+                          ) : (
+                            <table className="data-table" style={{ fontSize: 12, marginTop: 6 }}>
+                              <thead>
+                                <tr>
+                                  <th>Sản phẩm</th><th>ĐVT</th><th>Số lượng</th><th>Đơn giá</th><th>Thành tiền</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {orderDetails[o.id].items.map((item, i) => (
+                                  <tr key={i}>
+                                    <td style={{ fontWeight: 600 }}>{item.product_name}</td>
+                                    <td style={{ color: 'var(--text3)' }}>{item.unit}</td>
+                                    <td>{item.quantity}</td>
+                                    <td>{fmtFull(item.unit_price)}</td>
+                                    <td style={{ color: 'var(--accent)', fontWeight: 700 }}>
+                                      {fmtFull(item.quantity * item.unit_price)}
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          )}
+                        </td>
+                      </tr>
+                    )}
+                  </React.Fragment>
                 ))}
               </tbody>
             </table>
@@ -346,14 +396,19 @@ export default function DonBan() {
           customers={customers}
           products={products}
           onClose={() => setShowCreate(false)}
-          onSave={async (data) => { await ordersApi.create(data); await load() }}
+          onSave={async (data) => { await ordersApi.create(data); await load(); triggerRefresh() }}
         />
       )}
       {showPayment && (
         <ThuTienModal
           order={showPayment}
           onClose={() => setShowPayment(null)}
-          onSave={async (id, amt) => { await ordersApi.updatePayment(id, amt); await load() }}
+          onSave={async (id, amt) => {
+            await ordersApi.updatePayment(id, amt)
+            setOrderDetails(prev => { const n = { ...prev }; delete n[id]; return n })
+            await load()
+            triggerRefresh()
+          }}
         />
       )}
     </div>

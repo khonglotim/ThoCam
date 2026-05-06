@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { dashboard as dashboardApi } from '../api'
 import { fmt, fmtFull, dayLabel } from '../utils'
+import { useData } from '../contexts/DataContext'
 
 function StatusBadge({ status }) {
   if (status === 'paid') return <span className="badge badge-green">✓ Đã trả đủ</span>
@@ -11,6 +12,7 @@ function StatusBadge({ status }) {
 export default function Dashboard({ onNavigate }) {
   const [stats, setStats] = useState(null)
   const [loading, setLoading] = useState(true)
+  const { refreshKey } = useData()
 
   const load = () => {
     setLoading(true)
@@ -19,7 +21,7 @@ export default function Dashboard({ onNavigate }) {
       .catch(() => setLoading(false))
   }
 
-  useEffect(() => { load() }, [])
+  useEffect(() => { load() }, [refreshKey])
 
   if (loading) {
     return (

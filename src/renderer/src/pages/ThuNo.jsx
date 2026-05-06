@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react'
-import { collections as collectionsApi, customers as customersApi } from '../api'
+import React, { useState, useEffect } from 'react'
+import { collections as collectionsApi, customers as customersApi, orders as ordersApi } from '../api'
 import { fmtFull, fmt, todayDisplay } from '../utils'
+import { useData } from '../contexts/DataContext'
 
 function ThuTienModal({ customer, customerOrders, onClose, onSave }) {
   const [amount, setAmount] = useState('')
@@ -9,8 +10,16 @@ function ThuTienModal({ customer, customerOrders, onClose, onSave }) {
   const [notes, setNotes] = useState('')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
+  const [selectedOrderItems, setSelectedOrderItems] = useState([])
 
   const unpaidOrders = customerOrders.filter(o => o.status !== 'paid')
+
+  useEffect(() => {
+    if (!orderId) { setSelectedOrderItems([]); return }
+    ordersApi.getById(parseInt(orderId))
+      .then(o => setSelectedOrderItems(o?.items || []))
+      .catch(() => setSelectedOrderItems([]))
+  }, [orderId])
 
   const handleSave = async () => {
     const n = Number(amount)
@@ -78,6 +87,17 @@ function ThuTienModal({ customer, customerOrders, onClose, onSave }) {
                   </option>
                 ))}
               </select>
+              {selectedOrderItems.length > 0 && (
+                <div style={{ marginTop: 8, padding: '8px 12px', background: 'var(--bg)', borderRadius: 6, border: '1px solid var(--border)' }}>
+                  <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 6 }}>Sản phẩm trong đơn:</div>
+                  {selectedOrderItems.map((item, i) => (
+                    <div key={i} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, padding: '3px 0', borderBottom: i < selectedOrderItems.length - 1 ? '1px solid var(--border)' : 'none' }}>
+                      <span style={{ color: 'var(--text1)' }}>{item.product_name} <span style={{ color: 'var(--text3)' }}>× {item.quantity}</span></span>
+                      <span style={{ color: 'var(--accent)', fontWeight: 700 }}>{fmtFull(item.quantity * item.unit_price)}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
@@ -105,6 +125,9 @@ export default function ThuNo() {
   const [customerOrders, setCustomerOrders] = useState([])
   const [tab, setTab] = useState('cong-no')
   const [loading, setLoading] = useState(true)
+  const [expandedCustId, setExpandedCustId] = useState(null)
+  const [custOrderDetails, setCustOrderDetails] = useState({})
+  const { triggerRefresh } = useData()
 
   const load = async () => {
     setLoading(true)
@@ -126,6 +149,17 @@ export default function ThuNo() {
     const ords = await customersApi.getOrders(customer.id)
     setCustomerOrders(ords)
     setSelectedCustomer(customer)
+  }
+
+  const toggleExpandCust = async (custId) => {
+    if (expandedCustId === custId) { setExpandedCustId(null); return }
+    if (!custOrderDetails[custId]) {
+      const ords = await customersApi.getOrders(custId)
+      const unpaid = ords.filter(o => o.status !== 'paid')
+      const details = await Promise.all(unpaid.map(o => ordersApi.getById(o.id)))
+      setCustOrderDetails(prev => ({ ...prev, [custId]: details }))
+    }
+    setExpandedCustId(custId)
   }
 
   const totalDebt = customers.reduce((s, c) => s + c.debt, 0)
@@ -163,28 +197,70 @@ export default function ThuNo() {
               <table className="data-table">
                 <thead>
                   <tr>
+                    <th></th>
                     <th>Mã KH</th><th>Khách hàng</th><th>Tổng đã mua</th>
                     <th>Đã thanh toán</th><th>Còn nợ</th><th>Thao tác</th>
                   </tr>
                 </thead>
                 <tbody>
                   {customers.length === 0 && (
-                    <tr><td colSpan={6} className="empty-state">Không có khách hàng nào đang nợ</td></tr>
+                    <tr><td colSpan={7} className="empty-state">Không có khách hàng nào đang nợ</td></tr>
                   )}
                   {customers.map(c => (
-                    <tr key={c.id}>
-                      <td style={{ color: 'var(--accent)', fontWeight: 800 }}>{c.code}</td>
-                      <td className="td-name">{c.name}</td>
-                      <td>{fmtFull(c.total_purchased)}</td>
-                      <td style={{ color: 'var(--green)', fontWeight: 700 }}>{fmtFull(c.total_paid)}</td>
-                      <td style={{ color: 'var(--red)', fontWeight: 800 }}>{fmtFull(c.debt)}</td>
-                      <td>
-                        <button className="btn btn-primary" style={{ padding: '5px 14px', fontSize: 12 }}
-                          onClick={() => openModal(c)}>
-                          Thu tiền
-                        </button>
-                      </td>
-                    </tr>
+                    <React.Fragment key={c.id}>
+                      <tr style={{ cursor: 'pointer' }} onClick={() => toggleExpandCust(c.id)}>
+                        <td style={{ color: 'var(--text3)', fontSize: 11, width: 20, userSelect: 'none' }}>
+                          {expandedCustId === c.id ? '▲' : '▶'}
+                        </td>
+                        <td style={{ color: 'var(--accent)', fontWeight: 800 }}>{c.code}</td>
+                        <td className="td-name">{c.name}</td>
+                        <td>{fmtFull(c.total_purchased)}</td>
+                        <td style={{ color: 'var(--green)', fontWeight: 700 }}>{fmtFull(c.total_paid)}</td>
+                        <td style={{ color: 'var(--red)', fontWeight: 800 }}>{fmtFull(c.debt)}</td>
+                        <td>
+                          <button className="btn btn-primary" style={{ padding: '5px 14px', fontSize: 12 }}
+                            onClick={e => { e.stopPropagation(); openModal(c) }}>
+                            Thu tiền
+                          </button>
+                        </td>
+                      </tr>
+                      {expandedCustId === c.id && (
+                        <tr>
+                          <td colSpan={7} style={{ padding: '0 16px 12px 36px', background: 'var(--surface)' }}>
+                            {!custOrderDetails[c.id] ? (
+                              <div style={{ padding: '8px 0', color: 'var(--text3)', fontSize: 13 }}>Đang tải...</div>
+                            ) : custOrderDetails[c.id].length === 0 ? (
+                              <div style={{ padding: '8px 0', color: 'var(--text3)', fontSize: 13 }}>Không có đơn nào còn nợ</div>
+                            ) : (
+                              custOrderDetails[c.id].map(ord => (
+                                <div key={ord.id} style={{ marginTop: 8 }}>
+                                  <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--accent)', marginBottom: 4 }}>
+                                    {ord.code} – {ord.date} &nbsp;
+                                    <span style={{ color: 'var(--red)', fontWeight: 800 }}>Còn nợ: {fmtFull(ord.remaining_debt)}</span>
+                                  </div>
+                                  <table className="data-table" style={{ fontSize: 12 }}>
+                                    <thead>
+                                      <tr><th>Sản phẩm</th><th>ĐVT</th><th>Số lượng</th><th>Đơn giá</th><th>Thành tiền</th></tr>
+                                    </thead>
+                                    <tbody>
+                                      {ord.items.map((item, i) => (
+                                        <tr key={i}>
+                                          <td style={{ fontWeight: 600 }}>{item.product_name}</td>
+                                          <td style={{ color: 'var(--text3)' }}>{item.unit}</td>
+                                          <td>{item.quantity}</td>
+                                          <td>{fmtFull(item.unit_price)}</td>
+                                          <td style={{ color: 'var(--accent)', fontWeight: 700 }}>{fmtFull(item.quantity * item.unit_price)}</td>
+                                        </tr>
+                                      ))}
+                                    </tbody>
+                                  </table>
+                                </div>
+                              ))
+                            )}
+                          </td>
+                        </tr>
+                      )}
+                    </React.Fragment>
                   ))}
                 </tbody>
               </table>
@@ -232,7 +308,7 @@ export default function ThuNo() {
           customer={selectedCustomer}
           customerOrders={customerOrders}
           onClose={() => setSelectedCustomer(null)}
-          onSave={async (data) => { await collectionsApi.create(data); await load() }}
+          onSave={async (data) => { await collectionsApi.create(data); await load(); triggerRefresh() }}
         />
       )}
     </div>

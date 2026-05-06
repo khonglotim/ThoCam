@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { DataProvider } from './contexts/DataContext'
 import Sidebar from './components/Sidebar'
 import TabNav from './components/TabNav'
 import Dashboard from './pages/Dashboard'
@@ -24,12 +25,14 @@ export default function App() {
   const Page = PAGES[view] || Dashboard
 
   return (
-    <div style={{ display: 'flex', width: '100%', height: '100%', overflow: 'hidden' }}>
-      <Sidebar view={view} onNavigate={setView} />
-      <div className="main">
-        <TabNav view={view} onNavigate={setView} />
-        <Page onNavigate={setView} />
+    <DataProvider>
+      <div style={{ display: 'flex', width: '100%', height: '100%', overflow: 'hidden' }}>
+        <Sidebar view={view} onNavigate={setView} />
+        <div className="main">
+          <TabNav view={view} onNavigate={setView} />
+          <Page onNavigate={setView} />
+        </div>
       </div>
-    </div>
+    </DataProvider>
   )
 }

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { customers as customersApi } from '../api'
 import { fmtFull, fmt } from '../utils'
+import { useData } from '../contexts/DataContext'
 
 function CustomerModal({ customer, onClose, onSave }) {
   const editing = !!customer
@@ -75,6 +76,7 @@ export default function KhachHang() {
   const [search, setSearch] = useState('')
   const [modal, setModal] = useState(null)
   const [loading, setLoading] = useState(true)
+  const { triggerRefresh } = useData()
 
   const load = async () => {
     setLoading(true)
@@ -198,7 +200,7 @@ export default function KhachHang() {
           onSave={async (data) => {
             if (modal === 'create') await customersApi.create(data)
             else await customersApi.update(modal.id, data)
-            await load()
+            await load(); triggerRefresh()
           }}
         />
       )}

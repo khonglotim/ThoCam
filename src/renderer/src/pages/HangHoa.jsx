@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { products as productsApi } from '../api'
 import { fmtFull } from '../utils'
+import { useData } from '../contexts/DataContext'
 
 function ProductModal({ product, onClose, onSave }) {
   const editing = !!product
@@ -112,6 +113,7 @@ export default function HangHoa() {
   const [search, setSearch] = useState('')
   const [modal, setModal] = useState(null) // null | 'create' | product object
   const [loading, setLoading] = useState(true)
+  const { triggerRefresh } = useData()
 
   const load = async () => {
     setLoading(true)
@@ -212,7 +214,7 @@ export default function HangHoa() {
           onSave={async (data) => {
             if (modal === 'create') await productsApi.create(data)
             else await productsApi.update(modal.id, data)
-            await load()
+            await load(); triggerRefresh()
           }}
         />
       )}

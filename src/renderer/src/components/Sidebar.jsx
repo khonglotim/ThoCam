@@ -1,14 +1,16 @@
 import { useState, useEffect } from 'react'
 import { customers as customersApi } from '../api'
+import { useData } from '../contexts/DataContext'
 
 export default function Sidebar({ view, onNavigate }) {
   const [debtCount, setDebtCount] = useState(0)
+  const { refreshKey } = useData()
 
   useEffect(() => {
     customersApi.getAll()
       .then(list => setDebtCount(list.filter(c => c.debt > 0).length))
       .catch(() => {})
-  }, [view])
+  }, [view, refreshKey])
 
   const item = (id, icon, label, badge) => (
     <div

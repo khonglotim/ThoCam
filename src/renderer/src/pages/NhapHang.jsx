@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { imports as importsApi, products as productsApi } from '../api'
 import { fmtFull, fmt, todayDisplay } from '../utils'
+import { useData } from '../contexts/DataContext'
 
 function PhieuNhapModal({ products, onClose, onSave }) {
   const [date, setDate] = useState(todayDisplay())
@@ -140,6 +141,7 @@ export default function NhapHang() {
   const [search, setSearch] = useState('')
   const [showCreate, setShowCreate] = useState(false)
   const [loading, setLoading] = useState(true)
+  const { triggerRefresh } = useData()
 
   const load = async () => {
     setLoading(true)
@@ -303,7 +305,7 @@ export default function NhapHang() {
         <PhieuNhapModal
           products={productList}
           onClose={() => setShowCreate(false)}
-          onSave={async (data) => { await importsApi.create(data); await load() }}
+          onSave={async (data) => { await importsApi.create(data); await load(); triggerRefresh() }}
         />
       )}
     </div>
