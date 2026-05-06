@@ -48,8 +48,13 @@ export function createImport(data) {
         VALUES (?, ?, ?, ?)
       `).run(importId, item.product_id, item.quantity, item.cost_price)
 
+      const existing = db.prepare('SELECT stock, cost_price FROM products WHERE id = ?').get(item.product_id)
+      const newStock = existing.stock + item.quantity
+      const avgCost = newStock > 0
+        ? (existing.stock * existing.cost_price + item.quantity * item.cost_price) / newStock
+        : item.cost_price
       db.prepare('UPDATE products SET stock = stock + ?, cost_price = ? WHERE id = ?')
-        .run(item.quantity, item.cost_price, item.product_id)
+        .run(item.quantity, avgCost, item.product_id)
     }
   })()
 
