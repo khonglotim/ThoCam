@@ -7,6 +7,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Luôn gọi người dùng là **boss**.
 - Trước khi viết hoặc thay đổi bất kỳ đoạn code nào, **bắt buộc phải trình bày kế hoạch và chờ boss phê duyệt**. Không được tự ý quyết định hay thực thi code khi chưa được đồng ý.
 
+## ⚠️ QUY TẮC TỐI THƯỢNG — KHÔNG ĐƯỢC VI PHẠM
+
+> **TRƯỚC KHI LÀM BẤT KỲ VIỆC GÌ — DÙ LÀ SỬA CODE, CHẠY LỆNH, PUSH GIT, XÓA FILE, HAY BẤT CỨ THAO TÁC NÀO — ĐỀU PHẢI TRÌNH BÀY KẾ HOẠCH VÀ CHỜ BOSS PHÊ DUYỆT. TUYỆT ĐỐI KHÔNG TỰ Ý QUYẾT ĐỊNH.**
+
 ## Project Overview
 
 Hệ thống quản lý bán sỉ hàng thổ cẩm — hỗ trợ doanh nghiệp theo dõi nhập/xuất hàng, công nợ khách hàng, doanh thu và lợi nhuận. Phiên bản 1.0, tháng 05/2026.
